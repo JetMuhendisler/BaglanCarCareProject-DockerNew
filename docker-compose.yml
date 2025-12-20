@@ -20,6 +20,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: baglan_backend
+    restart: always
     depends_on:
       - db
     ports:
