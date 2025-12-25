@@ -57,39 +57,43 @@ const OrderDetailModal = ({ order, staff, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-colors
+        bg-white dark:bg-dark-card">
         
         {/* BAŞLIK */}
-        <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
+        <div className="p-4 border-b flex justify-between items-center transition-colors
+          bg-gray-50 border-gray-200
+          dark:bg-dark-card dark:border-dark-border">
           <div>
-            <h3 className="font-bold text-lg text-gray-800">İş Emri Düzenle</h3>
-            <p className="text-xs text-gray-500">#{order.id} - {order.plate}</p>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">İş Emri Düzenle</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">#{order.id} - {order.plate}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full text-gray-500 hover:text-red-500 transition-colors"><X size={20}/></button>
+          <button onClick={onClose} className="p-2 rounded-full transition-colors text-gray-500 hover:text-red-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-dark-hover dark:hover:text-red-400"><X size={20}/></button>
         </div>
 
+        {/* İÇERİK */}
         {/* İÇERİK */}
         <div className="p-6 space-y-6 overflow-y-auto">
           
           {/* DURUM BUTONLARI */}
           <div>
-            <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <Activity size={16} className="text-blue-600"/> İşlem Durumu
+            <label className="text-sm font-bold mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <Activity size={16} className="text-blue-600 dark:text-brand"/> İşlem Durumu
             </label>
             <div className="grid grid-cols-4 gap-2">
               {[
-                { id: 1, label: "Bekliyor", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
-                { id: 2, label: "İşlemde", color: "bg-blue-50 text-blue-700 border-blue-200" },
-                { id: 3, label: "Tamamlandı", color: "bg-green-50 text-green-700 border-green-200" },
-                { id: 4, label: "İptal", color: "bg-red-50 text-red-700 border-red-200" }
+                { id: 1, label: "Bekliyor", color: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-500 dark:border-yellow-800" },
+                { id: 2, label: "İşlemde", color: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-brand/10 dark:text-brand dark:border-brand/30" },
+                { id: 3, label: "Tamamlandı", color: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500 dark:border-green-800" },
+                { id: 4, label: "İptal", color: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-500 dark:border-red-800" }
               ].map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setStatusId(s.id)}
                   className={`py-2 text-xs font-bold rounded-lg border transition-all relative
                     ${statusId === s.id 
-                      ? `${s.color} ring-2 ring-offset-1 ring-gray-300 scale-105 shadow-md border-transparent` 
-                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
+                      ? `${s.color} ring-2 ring-offset-1 ring-gray-300 dark:ring-dark-border scale-105 shadow-md border-transparent` 
+                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 dark:bg-dark-bg dark:border-dark-border dark:text-gray-400 dark:hover:bg-dark-hover"
                     }`}
                 >
                   {s.label}
@@ -100,14 +104,16 @@ const OrderDetailModal = ({ order, staff, onClose, onSave }) => {
           </div>
 
           {/* --- YENİ EKLENEN ÖDEME BÖLÜMÜ --- */}
-          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center">
+          <div className="p-3 rounded-lg border flex justify-between items-center transition-colors
+            bg-gray-50 border-gray-200
+            dark:bg-dark-bg/50 dark:border-dark-border">
             <div className="flex items-center gap-2">
-                <div className="bg-green-100 p-2 rounded-full text-green-600">
+                <div className="p-2 rounded-full text-green-600 dark:text-brand bg-green-100 dark:bg-brand/10">
                     <DollarSign size={20} />
                 </div>
                 <div>
-                    <p className="text-sm font-bold text-gray-800">Ödeme Durumu</p>
-                    <p className="text-xs text-gray-500">{isPaid ? "Tahsilat yapıldı." : "Ödeme bekleniyor."}</p>
+                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">Ödeme Durumu</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{isPaid ? "Tahsilat yapıldı." : "Ödeme bekleniyor."}</p>
                 </div>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -117,28 +123,33 @@ const OrderDetailModal = ({ order, staff, onClose, onSave }) => {
                     checked={isPaid} 
                     onChange={(e) => setIsPaid(e.target.checked)} 
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                <span className="ml-3 text-sm font-medium text-gray-700">{isPaid ? "Ödendi" : "Ödenmedi"}</span>
+                <div className="w-11 h-6 bg-gray-200 dark:bg-dark-hover peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 dark:peer-checked:bg-brand"></div>
+                <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">{isPaid ? "Ödendi" : "Ödenmedi"}</span>
             </label>
           </div>
           {/* ----------------------------------- */}
 
           {/* PERSONEL LİSTESİ */}
           <div>
-            <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <User size={16} className="text-purple-600"/> Personel Seçimi
+            <label className="text-sm font-bold mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <User size={16} className="text-purple-600 dark:text-purple-400"/> Personel Seçimi
             </label>
-            <div className="border rounded-lg p-2 max-h-48 overflow-y-auto bg-gray-50/50 space-y-2">
+            <div className="border rounded-lg p-2 max-h-48 overflow-y-auto space-y-2
+              bg-gray-50/50 border-gray-200
+              dark:bg-dark-bg/50 dark:border-dark-border">
               {staff.map((p) => {
                 const isSelected = personnelIds.includes(p.id);
                 return (
                   <div key={p.id} onClick={() => toggleStaff(p.id)}
                     className={`flex items-center gap-3 p-2 rounded-md cursor-pointer transition-all border
-                      ${isSelected ? "bg-purple-100 border-purple-300 shadow-sm" : "bg-white border-gray-200 hover:border-blue-300"}`}>
-                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isSelected ? "bg-purple-600 border-purple-600" : "bg-white border-gray-400"}`}>
+                      ${isSelected 
+                        ? "bg-purple-100 border-purple-300 shadow-sm dark:bg-purple-900/30 dark:border-purple-800" 
+                        : "bg-white border-gray-200 hover:border-blue-300 dark:bg-dark-card dark:border-dark-border dark:hover:border-brand/50"}`}>
+                    <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors 
+                      ${isSelected ? "bg-purple-600 border-purple-600 dark:bg-purple-700 dark:border-purple-700" : "bg-white border-gray-400 dark:bg-dark-bg dark:border-gray-600"}`}>
                       {isSelected && <Check size={14} className="text-white" />}
                     </div>
-                    <span className={`text-sm font-medium ${isSelected ? "text-purple-900" : "text-gray-700"}`}>
+                    <span className={`text-sm font-medium ${isSelected ? "text-purple-900 dark:text-purple-300" : "text-gray-700 dark:text-gray-300"}`}>
                       {p.name || "İsimsiz Personel"} 
                     </span>
                   </div>
@@ -150,19 +161,27 @@ const OrderDetailModal = ({ order, staff, onClose, onSave }) => {
 
           {/* NOTLAR */}
           <div>
-            <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <FileText size={16} className="text-gray-600"/> Not / Açıklama
+            <label className="text-sm font-bold mb-2 flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <FileText size={16} className="text-gray-600 dark:text-gray-400"/> Not / Açıklama
             </label>
-            <textarea className="w-full border p-3 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[80px]"
+            <textarea className="w-full border p-3 rounded-lg text-sm focus:ring-2 outline-none min-h-[80px] transition-colors
+              border-gray-300 text-gray-900 focus:ring-blue-500
+              dark:border-dark-border dark:bg-dark-bg dark:text-white dark:focus:ring-brand dark:placeholder-gray-500"
               placeholder="Not giriniz..." value={description} onChange={(e) => setDescription(e.target.value)}/>
           </div>
         </div>
 
         {/* KAYDET BUTONU */}
-        <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg text-sm font-medium">İptal</button>
+        <div className="p-4 border-t flex justify-end gap-3 transition-colors
+          bg-gray-50 border-gray-200
+          dark:bg-dark-card dark:border-dark-border">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium transition-colors
+            text-gray-600 hover:bg-gray-200 
+            dark:text-gray-400 dark:hover:bg-dark-hover">İptal</button>
           <button onClick={handleSave} disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-200 disabled:opacity-70">
+            className="px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg disabled:opacity-70 transition-all
+             bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200
+             dark:bg-brand dark:text-white dark:hover:bg-brand-dark dark:shadow-brand/20">
             {loading ? "Kaydediliyor..." : <><Save size={16}/> Kaydet</>}
           </button>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Car, Loader2, AlertCircle } from "lucide-react";
 import { authService } from "../api";
+import bgImage from "../assets/bg.jpg";
 
 const LoginView = ({ onLogin }) => {
   const [username, setUsername] = useState("");
@@ -43,18 +44,27 @@ const LoginView = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 transition-colors duration-300
+      bg-gray-100 dark:bg-dark-bg"
+    >
+      <div className="rounded-2xl shadow-xl w-full max-w-md p-8 border transition-all duration-300
+        bg-white border-gray-200
+        dark:bg-dark-card dark:border-dark-border">
         <div className="text-center mb-8">
-          <div className="bg-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg transition-colors
+            bg-blue-600 shadow-blue-200
+            dark:bg-brand dark:shadow-brand/20">
             <Car className="text-white" size={32} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Bağlan Oto</h1>
-          <p className="text-gray-500">Yönetim Paneli Girişi</p>
+          <h1 className="text-3xl font-bold mb-2 text-gray-800 dark:text-gray-100">Bağlan Oto</h1>
+          <p className="text-gray-500 dark:text-gray-400">Yönetim Paneli Girişi</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg flex items-center gap-2 text-sm">
+          <div className="mb-4 p-3 rounded-lg flex items-center gap-2 text-sm
+            bg-red-50 border border-red-200 text-red-600
+            dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
@@ -62,19 +72,25 @@ const LoginView = ({ onLogin }) => {
 
                 <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Kullanıcı Adı</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-400">Kullanıcı Adı</label>
             <input type="text" name="username" id="username" value={username} onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-4 py-3 border rounded-lg outline-none transition-colors
+                bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 placeholder-gray-400
+                dark:bg-dark-bg dark:border-dark-border dark:text-white dark:focus:ring-brand dark:placeholder-gray-500"
               placeholder="admin" required autoComplete="username" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-400">Şifre</label>
             <input type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className="w-full px-4 py-3 border rounded-lg outline-none transition-colors
+                bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500 placeholder-gray-400
+                dark:bg-dark-bg dark:border-dark-border dark:text-white dark:focus:ring-brand dark:placeholder-gray-500"
               placeholder="••••••••" required autoComplete="current-password" />
           </div>
           <button type="submit" disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-bold flex items-center justify-center gap-2 disabled:opacity-70">
+            className="w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 disabled:opacity-70 shadow-lg transition-all
+              bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200
+              dark:bg-brand dark:text-white dark:hover:bg-brand-dark dark:shadow-brand/20">
             {loading ? <><Loader2 className="animate-spin" size={20} /> Giriş...</> : "Giriş Yap"}
           </button>
         </form>

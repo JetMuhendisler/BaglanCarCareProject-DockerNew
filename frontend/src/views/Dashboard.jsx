@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Car, LogOut, ClipboardList, Check, Clock, TrendingUp, Users, DollarSign, Plus, Search, ChevronDown, ChevronRight, Trash2, Settings, Loader2, AlertTriangle, Tag, UserCheck } from "lucide-react";
+import { Car, LogOut, ClipboardList, Check, Clock, TrendingUp, Users, DollarSign, Plus, Search, ChevronDown, ChevronRight, Trash2, Settings, Loader2, AlertTriangle, Tag, UserCheck, Moon, Sun } from "lucide-react";
 
 import NewOrderWizard from "./NewOrderWizard"; 
 import OrderDetailModal from "../components/OrderDetailModal";
 import { StaffDetailModal, AddStaffModal } from "../components/StaffModals";
 import AddTransactionModal from "../components/TransactionModal";
 import SettingsView from "../components/SettingsView"; 
+ 
 import { orderService, personnelService, expenseService } from "../api";
+import bgImage from "../assets/bg.jpg";
 
 const safeDate = (dateString) => {
   if (!dateString) return "";
@@ -29,75 +31,101 @@ const OrderList = ({ orders, onEdit, onDelete }) => {
     <div>
       <div className="mb-4 relative">
         <Search className="absolute left-3 top-2.5 text-gray-400" size={18}/>
-        <input className="pl-10 border p-2 rounded-lg w-full md:w-1/3 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-colors" placeholder="Plaka veya Müşteri Ara..." value={search} onChange={e => setSearch(e.target.value)} />
+        <input className="pl-10 border p-2 rounded-lg w-full md:w-1/3 outline-none transition-colors
+          bg-white text-gray-900 border-gray-300 focus:ring-blue-500
+          dark:bg-dark-card dark:text-white dark:border-dark-border dark:focus:ring-brand dark:placeholder-gray-500" 
+          placeholder="Plaka veya Müşteri Ara..." value={search} onChange={e => setSearch(e.target.value)} />
       </div>
       
       <div className="space-y-3">
+
         {filtered.map(order => (
-          <div key={order.id} className="bg-white border border-gray-200 rounded-lg hover:border-blue-300 transition-all overflow-hidden shadow-sm">
+          <div key={order.id} className="border rounded-lg transition-all overflow-hidden shadow-sm
+            bg-white border-gray-200 hover:border-blue-400
+            dark:bg-dark-card dark:border-dark-border dark:hover:border-brand/50">
             {/* ÖZET KISMI */}
-            <div className="p-4 flex flex-col md:flex-row gap-4 md:items-center justify-between cursor-pointer bg-white hover:bg-gray-50 transition-colors" onClick={() => toggleExpand(order.id)}>
+            <div className="p-4 flex flex-col md:flex-row gap-4 md:items-center justify-between cursor-pointer transition-colors
+              hover:bg-gray-50
+              dark:hover:bg-dark-hover" onClick={() => toggleExpand(order.id)}>
               <div className="flex items-center gap-4">
-                <div className={`p-2 rounded-full transition-colors ${expandedOrderId === order.id ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-400"}`}>
+                <div className={`p-2 rounded-full transition-colors ${expandedOrderId === order.id 
+                  ? "bg-blue-600 dark:bg-brand text-white" 
+                  : "bg-gray-100 dark:bg-dark-hover text-gray-500 dark:text-gray-400"}`}>
                   {expandedOrderId === order.id ? <ChevronDown size={20}/> : <ChevronRight size={20}/>}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-gray-800 text-lg tracking-wide">{order.plate}</span>
+                    <span className="font-mono font-bold text-lg tracking-wide text-gray-800 dark:text-gray-100">{order.plate}</span>
                     <span className="text-gray-400">|</span>
-                    <span className="font-medium text-gray-700">{order.customer}</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">{order.customer}</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1 flex gap-2 items-center"><Car size={12}/> {order.vehicle} <span className="bg-gray-100 px-1 rounded border">#{order.id}</span></div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex gap-2 items-center"><Car size={12}/> {order.vehicle} 
+                    <span className="px-1 rounded border dark:bg-dark-hover dark:border-dark-border bg-gray-100 border-gray-200">#{order.id}</span>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-4 justify-between md:justify-end pl-12 md:pl-0 border-t md:border-t-0 pt-3 md:pt-0 mt-3 md:mt-0">
-                <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.status === "Completed" || order.status === "Tamamlandı" ? "bg-green-50 text-green-700 border-green-200" : "bg-yellow-50 text-yellow-700 border-yellow-200"}`}>{order.status}</span>
-                <span className="font-bold text-gray-800 text-lg">₺{order.totalPrice?.toLocaleString()}</span>
-                <div className="flex gap-1 pl-2 border-l" onClick={(e) => e.stopPropagation()}>
-                   <button onClick={() => onEdit(order)} className="p-2 hover:bg-blue-50 text-gray-500 hover:text-blue-600 rounded-lg transition-colors"><Settings size={18}/></button>
-                   <button onClick={() => onDelete(order.id)} className="p-2 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-lg transition-colors"><Trash2 size={18}/></button>
+                 <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.status === "Completed" || order.status === "Tamamlandı" 
+                   ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800" 
+                   : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800"}`}>{order.status}</span>
+                <span className="font-bold text-lg text-gray-800 dark:text-gray-100">₺{order.totalPrice?.toLocaleString()}</span>
+                <div className="flex gap-1 pl-2 border-l border-gray-200 dark:border-dark-border" onClick={(e) => e.stopPropagation()}>
+                   <button onClick={() => onEdit(order)} className="p-2 rounded-lg transition-colors text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-dark-hover dark:hover:text-brand"><Settings size={18}/></button>
+                   <button onClick={() => onDelete(order.id)} className="p-2 rounded-lg transition-colors text-gray-400 hover:bg-gray-100 hover:text-red-600 dark:hover:bg-dark-hover dark:hover:text-red-400"><Trash2 size={18}/></button>
                 </div>
               </div>
             </div>
 
             {/* DETAY KISMI */}
             {expandedOrderId === order.id && (
-              <div className="bg-gray-50 p-4 border-t border-gray-100 pl-4 md:pl-16 animate-in slide-in-from-top-2 duration-200">
+
+              <div className="p-4 border-t pl-4 md:pl-16 animate-in slide-in-from-top-2 duration-200
+                bg-gray-50 border-gray-200
+                dark:bg-dark-bg/50 dark:border-dark-border">
                 
                 {/* 1. Hizmetler */}
                 <h4 className="text-xs font-bold text-gray-500 uppercase mb-3 flex items-center gap-2"><Tag size={14}/> Yapılacak İşlemler</h4>
                 {order.services && Array.isArray(order.services) && order.services.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                     {order.services.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-3 bg-white border border-gray-200 rounded-md shadow-sm">
+                      <div key={idx} className="flex justify-between items-center p-3 rounded-md shadow-sm border
+                        bg-white border-gray-200
+                        dark:bg-dark-card dark:border-dark-border">
                         <div className="flex flex-col">
-                          <span className="font-bold text-gray-800 text-sm">{item.product || item.Product || "Hizmet"}</span>
+                          <span className="font-bold text-sm text-gray-800 dark:text-gray-200">{item.product || item.Product || "Hizmet"}</span>
                           <div className="text-xs mt-1 flex items-center gap-2">
-                             {(item.spec || item.Spec) && <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium border border-purple-200">{item.spec || item.Spec}</span>}
+                             {(item.spec || item.Spec) && <span className="px-1.5 py-0.5 rounded font-medium border
+                               bg-purple-50 text-purple-700 border-purple-200
+                               dark:bg-brand/10 dark:text-brand dark:border-brand/20">{item.spec || item.Spec}</span>}
                              <span className="text-gray-500">{item.category || item.Category}</span>
-                             <ChevronRight size={10} className="text-gray-300"/>
-                             <span className="font-bold text-gray-600">{item.part || item.Part || item.SelectedParts}</span>
+                             <ChevronRight size={10} className="text-gray-400 dark:text-gray-600"/>
+                             <span className="font-bold text-gray-600 dark:text-gray-400">{item.part || item.Part || item.SelectedParts}</span>
                           </div>
                         </div>
-                        <span className="font-bold text-green-600 bg-green-50 px-2 py-1 rounded text-sm border border-green-100">₺{item.price || item.Price}</span>
+                        <span className="font-bold px-2 py-1 rounded text-sm border
+                          bg-gray-50 text-gray-800 border-gray-200
+                          dark:bg-brand/10 dark:text-brand dark:border-brand/20">₺{item.price || item.Price}</span>
                       </div>
                     ))}
                   </div>
-                ) : (<div className="bg-white p-3 rounded border text-sm text-gray-400 italic text-center mb-4">Hizmet detayı girilmemiş.</div>)}
+                ) : (<div className="p-3 rounded border text-sm text-gray-500 italic text-center mb-4 bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">Hizmet detayı girilmemiş.</div>)}
                 
                 {/* 2. Alt Bilgi (Personel & Ödeme) */}
-                <div className="pt-3 border-t border-gray-200 flex flex-col md:flex-row justify-between text-sm text-gray-600 gap-2">
+                <div className="pt-3 border-t flex flex-col md:flex-row justify-between text-sm text-gray-600 dark:text-gray-400 gap-2
+                  border-gray-200 dark:border-dark-border">
                   
-                  {/* PERSONEL GÖSTERİMİ (YENİ EKLENDİ) */}
-                  <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 w-fit">
-                    <UserCheck size={16} className="text-blue-600"/>
-                    <span className="font-bold text-blue-800">Personel:</span>
-                    <span className="text-blue-900 font-medium">{order.assignedStaff}</span>
+                  {/* PERSONEL GÖSTERİMİ */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit
+                    bg-blue-50 border-blue-100
+                    dark:bg-blue-900/20 dark:border-blue-800">
+                    <UserCheck size={16} className="text-blue-600 dark:text-blue-400"/>
+                    <span className="font-bold text-blue-800 dark:text-blue-300">Personel:</span>
+                    <span className="text-blue-900 dark:text-blue-200 font-medium">{order.assignedStaff}</span>
                   </div>
 
                   <div className="flex items-center gap-4 justify-between md:justify-end mt-2 md:mt-0">
                     <span>Kayıt: {order.date}</span>
-                    <span className="flex items-center gap-1">Ödeme: <span className="font-bold text-gray-700">{order.paymentMethod}</span> {order.isPaid ? <span className="text-green-600 font-bold">(Tahsil Edildi)</span> : <span className="text-red-500 font-bold">(Bekliyor)</span>}</span>
+                    <span className="flex items-center gap-1">Ödeme: <span className="font-bold text-gray-700 dark:text-gray-300">{order.paymentMethod}</span> {order.isPaid ? <span className="text-green-600 dark:text-green-400 font-bold">(Tahsil Edildi)</span> : <span className="text-red-500 dark:text-red-400 font-bold">(Bekliyor)</span>}</span>
                   </div>
                 </div>
 
@@ -105,7 +133,7 @@ const OrderList = ({ orders, onEdit, onDelete }) => {
             )}
           </div>
         ))}
-        {filtered.length === 0 && <div className="text-center text-gray-500 py-10 bg-white border rounded-lg">Kayıtlı iş emri bulunamadı.</div>}
+        {filtered.length === 0 && <div className="text-center text-gray-500 dark:text-gray-400 py-10 rounded-lg border transition-colors bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">Kayıtlı iş emri bulunamadı.</div>}
       </div>
     </div>
   );
@@ -125,6 +153,33 @@ const Dashboard = ({ user, onLogout }) => {
   const [showStaffDetail, setShowStaffDetail] = useState(null);
   const [showAddStaff, setShowAddStaff] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
+
+  // --- DARK MODE TOGGLE ---
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    // İlk Yükleme: Kaydedilmiş mi bak, yoksa varsayılan Dark
+    const saved = localStorage.getItem("theme");
+    if (saved === "light") {
+        setIsDark(false);
+        document.documentElement.classList.remove("dark");
+    } else {
+        setIsDark(true);
+        document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (isDark) {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+        setIsDark(false);
+    } else {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+        setIsDark(true);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -171,7 +226,7 @@ const Dashboard = ({ user, onLogout }) => {
       setExpenses(Array.isArray(expensesData) ? expensesData.map(e => ({
         id: e.id || e.Id,
         type: (e.Type === 1 || e.type === 1 || e.IsIncome === true) ? "income" : "expense",
-        title: e.Title || e.title || e.Description,
+        title: e.Title || e.title || e.Description || e.description,
         description: e.Description || e.description,
         amount: e.Amount || e.amount || 0,
         date: safeDate(e.Date || e.date),
@@ -261,21 +316,68 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-white shadow-sm border-b"><div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3"><div className="bg-blue-600 p-2 rounded-lg"><Car className="text-white" size={24}/></div><div><h1 className="text-xl font-bold text-gray-800">Bağlan Oto Care</h1><p className="text-sm text-gray-500">Yönetim Paneli</p></div></div><div className="flex items-center gap-4"><span className="text-sm text-gray-600 font-medium">{user?.name}</span><button onClick={onLogout} className="text-red-600"><LogOut size={20}/></button></div></div></div>
+    <div 
+      className="min-h-screen font-sans transition-colors duration-300
+      bg-gray-100 text-gray-800
+      dark:bg-dark-bg dark:text-gray-200"
+    >
+      <div className="shadow-sm border-b transition-colors
+        bg-white border-gray-200
+        dark:bg-dark-card dark:border-dark-border">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-600 text-white dark:bg-brand dark:text-black">
+                    <Car size={24}/>
+                </div>
+                <div>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Bağlan Oto Care</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Yönetim Paneli</p>
+                </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+                <button onClick={toggleTheme} className="p-2 rounded-full transition-colors 
+                    bg-gray-100 text-gray-600 hover:bg-gray-200
+                    dark:bg-dark-hover dark:text-brand dark:hover:bg-dark-bg">
+                    {isDark ? <Sun size={20}/> : <Moon size={20}/>}
+                </button>
+                <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{user?.name}</span>
+                <button onClick={onLogout} className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"><LogOut size={20}/></button>
+            </div>
+          </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow flex justify-between"><div><p className="text-gray-500 text-sm">Toplam İş</p><p className="text-2xl font-bold">{stats.totalOrders}</p></div><ClipboardList className="text-blue-600" size={32}/></div>
-          <div className="bg-white p-6 rounded-lg shadow flex justify-between"><div><p className="text-gray-500 text-sm">Tamamlanan</p><p className="text-2xl font-bold text-green-600">{stats.completedOrders}</p></div><Check className="text-green-600" size={32}/></div>
-          <div className="bg-white p-6 rounded-lg shadow flex justify-between"><div><p className="text-gray-500 text-sm">Bekleyen</p><p className="text-2xl font-bold text-yellow-600">{stats.pendingOrders}</p></div><Clock className="text-yellow-600" size={32}/></div>
-          <div className="bg-white p-6 rounded-lg shadow flex justify-between"><div><p className="text-gray-500 text-sm">Ciro</p><p className="text-2xl font-bold text-purple-600">₺{stats.totalRevenue?.toLocaleString()}</p></div><TrendingUp className="text-purple-600" size={32}/></div>
+          <div className="p-6 rounded-lg shadow flex justify-between border bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+              <div><p className="text-gray-500 dark:text-gray-400 text-sm">Toplam İş</p><p className="text-2xl font-bold text-gray-800 dark:text-white">{stats.totalOrders}</p></div>
+              <ClipboardList className="text-blue-500 dark:text-brand" size={32}/>
+          </div>
+          <div className="p-6 rounded-lg shadow flex justify-between border bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+              <div><p className="text-gray-500 dark:text-gray-400 text-sm">Tamamlanan</p><p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completedOrders}</p></div>
+              <Check className="text-green-500 dark:text-green-400" size={32}/>
+          </div>
+          <div className="p-6 rounded-lg shadow flex justify-between border bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+              <div><p className="text-gray-500 dark:text-gray-400 text-sm">Bekleyen</p><p className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">{stats.pendingOrders}</p></div>
+              <Clock className="text-yellow-500" size={32}/>
+          </div>
+          <div className="p-6 rounded-lg shadow flex justify-between border bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+              <div><p className="text-gray-500 dark:text-gray-400 text-sm">Ciro</p><p className="text-2xl font-bold text-blue-700 dark:text-brand-accent">₺{stats.totalRevenue?.toLocaleString()}</p></div>
+              <TrendingUp className="text-blue-600 dark:text-brand-accent" size={32}/>
+          </div>
         </div>
-        <div className="bg-white border-b rounded-t-lg flex gap-1 px-4 overflow-x-auto">
-          {[{id:"orders",label:"İş Emirleri",icon:ClipboardList},{id:"customers",label:"Müşteri Ekle",icon:Plus},{id:"staff",label:"Personel",icon:Users},{id:"accounting",label:"Muhasebe",icon:DollarSign},{id:"settings",label:"Ayarlar",icon:Settings}].map((tab)=>(<button key={tab.id} onClick={()=>tab.id==="customers"?setShowWizard(true):setActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-3 border-b-2 whitespace-nowrap transition-colors ${activeTab===tab.id?"border-blue-600 text-blue-600":"border-transparent text-gray-600 hover:text-gray-800"}`}><tab.icon size={18}/> {tab.label}</button>))}
+        <div className="rounded-t-lg flex gap-1 px-4 overflow-x-auto border-b bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+          {[{id:"orders",label:"İş Emirleri",icon:ClipboardList},{id:"customers",label:"Müşteri Ekle",icon:Plus},{id:"staff",label:"Personel",icon:Users},{id:"accounting",label:"Muhasebe",icon:DollarSign},{id:"settings",label:"Ayarlar",icon:Settings}].map((tab)=>(
+            <button key={tab.id} onClick={()=>tab.id==="customers"?setShowWizard(true):setActiveTab(tab.id)} 
+            className={`flex items-center gap-2 px-4 py-3 border-b-2 whitespace-nowrap transition-colors 
+            ${activeTab===tab.id 
+                ? "border-blue-600 text-blue-600 dark:border-brand dark:text-brand" 
+                : "border-transparent text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"}`}>
+            <tab.icon size={18}/> {tab.label}</button>))}
         </div>
-        <div className="bg-white rounded-b-lg shadow p-6 min-h-[400px]">
-          {errorMsg && <div className="bg-red-50 text-red-700 p-3 rounded mb-4 flex items-center gap-2"><AlertTriangle size={18}/>{errorMsg}</div>}
-          {loading ? <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-blue-600" size={48}/></div> : (
+        <div className="rounded-b-lg shadow p-6 min-h-[400px] border border-t-0 bg-white border-gray-200 dark:bg-dark-card dark:border-dark-border">
+          {errorMsg && <div className="bg-red-900/20 text-red-300 border border-red-900/50 p-3 rounded mb-4 flex items-center gap-2"><AlertTriangle size={18}/>{errorMsg}</div>}
+          {loading ? <div className="flex justify-center items-center h-64"><Loader2 className="animate-spin text-brand" size={48}/></div> : (
             <>{activeTab==="orders"&&<OrderList orders={orders} onEdit={(o)=>setShowOrderDetail(o)} onDelete={handleDeleteOrder}/>}{activeTab==="staff"&&<StaffList staff={staff} onAdd={()=>setShowAddStaff(true)} onDetail={(p)=>setShowStaffDetail(p)} onDelete={handleDeleteStaff}/>}{activeTab==="accounting"&&<AccountingView expenses={expenses} orders={orders} onAdd={()=>setShowAddExpense(true)} onDelete={handleDeleteExpense} onDeleteOrder={handleDeleteOrder}/>}{activeTab==="settings"&&<SettingsView/>}</>
           )}
         </div>
