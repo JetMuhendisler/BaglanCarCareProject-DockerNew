@@ -22,3 +22,15 @@ C:\Users\tunca\Desktop\BaglanCarCare-Backend\BaglanCarCare.Domain\obj\Debug\net8
 C:\Users\tunca\Desktop\BaglanCarCare-Backend\BaglanCarCare.Domain\obj\Debug\net8.0\refint\BaglanCarCare.Domain.dll
 C:\Users\tunca\Desktop\BaglanCarCare-Backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.pdb
 C:\Users\tunca\Desktop\BaglanCarCare-Backend\BaglanCarCare.Domain\obj\Debug\net8.0\ref\BaglanCarCare.Domain.dll
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\bin\Debug\net8.0\BaglanCarCare.Domain.deps.json
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\bin\Debug\net8.0\BaglanCarCare.Domain.dll
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\bin\Debug\net8.0\BaglanCarCare.Domain.pdb
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.AssemblyInfoInputs.cache
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.AssemblyInfo.cs
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.sourcelink.json
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.dll
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\refint\BaglanCarCare.Domain.dll
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\BaglanCarCare.Domain.pdb
+C:\Users\Alperen\Desktop\BaglanCarCareProject-DockerNew\backend\BaglanCarCare.Domain\obj\Debug\net8.0\ref\BaglanCarCare.Domain.dll

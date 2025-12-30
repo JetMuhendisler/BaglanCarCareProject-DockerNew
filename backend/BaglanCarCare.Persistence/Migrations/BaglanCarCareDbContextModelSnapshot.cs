@@ -190,6 +190,46 @@ namespace BaglanCarCare.Persistence.Migrations
                     b.ToTable("Customers", (string)null);
                 });
 
+            modelBuilder.Entity("BaglanCarCare.Domain.Entities.DeletionRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RequesterName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TargetEntityName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeletionRequests");
+                });
+
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.ExpenseRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -222,43 +262,6 @@ namespace BaglanCarCare.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExpenseRecords");
-                });
-
-            modelBuilder.Entity("BaglanCarCare.Domain.Entities.Material", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("QualityGrade")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Thickness")
-                        .HasColumnType("text");
-
-                    b.Property<int>("WarrantyYears")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Materials", (string)null);
                 });
 
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.Personnel", b =>
@@ -295,37 +298,6 @@ namespace BaglanCarCare.Persistence.Migrations
                     b.ToTable("Personnels", (string)null);
                 });
 
-            modelBuilder.Entity("BaglanCarCare.Domain.Entities.ServiceDefinition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("IncludedParts")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceDefinitions", (string)null);
-                });
-
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.ServiceTransaction", b =>
                 {
                     b.Property<int>("Id")
@@ -352,9 +324,6 @@ namespace BaglanCarCare.Persistence.Migrations
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ServiceDefinitionId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -368,8 +337,6 @@ namespace BaglanCarCare.Persistence.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ServiceDefinitionId");
 
                     b.HasIndex("VehicleId");
 
@@ -410,45 +377,6 @@ namespace BaglanCarCare.Persistence.Migrations
                     b.HasIndex("ServiceTransactionId");
 
                     b.ToTable("ServiceTransactionItems");
-                });
-
-            modelBuilder.Entity("BaglanCarCare.Domain.Entities.TransactionDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ItemName")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("ProductName")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ServiceTransactionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Specification")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceTransactionId");
-
-                    b.ToTable("TransactionDetails");
                 });
 
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.User", b =>
@@ -574,17 +502,11 @@ namespace BaglanCarCare.Persistence.Migrations
 
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.ServiceTransaction", b =>
                 {
-                    b.HasOne("BaglanCarCare.Domain.Entities.ServiceDefinition", "ServiceDefinition")
-                        .WithMany("ServiceTransactions")
-                        .HasForeignKey("ServiceDefinitionId");
-
                     b.HasOne("BaglanCarCare.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("ServiceTransactions")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ServiceDefinition");
 
                     b.Navigation("Vehicle");
                 });
@@ -593,17 +515,6 @@ namespace BaglanCarCare.Persistence.Migrations
                 {
                     b.HasOne("BaglanCarCare.Domain.Entities.ServiceTransaction", "ServiceTransaction")
                         .WithMany("TransactionItems")
-                        .HasForeignKey("ServiceTransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServiceTransaction");
-                });
-
-            modelBuilder.Entity("BaglanCarCare.Domain.Entities.TransactionDetail", b =>
-                {
-                    b.HasOne("BaglanCarCare.Domain.Entities.ServiceTransaction", "ServiceTransaction")
-                        .WithMany()
                         .HasForeignKey("ServiceTransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -655,11 +566,6 @@ namespace BaglanCarCare.Persistence.Migrations
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("BaglanCarCare.Domain.Entities.ServiceDefinition", b =>
-                {
-                    b.Navigation("ServiceTransactions");
                 });
 
             modelBuilder.Entity("BaglanCarCare.Domain.Entities.ServiceTransaction", b =>

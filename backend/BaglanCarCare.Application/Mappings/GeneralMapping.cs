@@ -18,40 +18,15 @@ namespace BaglanCarCare.Application.Mappings
             CreateMap<UpdateExpenseDto, ExpenseRecord>()
                 .ForMember(dest => dest.IsIncome, opt => opt.MapFrom(src => src.Type == 1));
 
-            // --- TRANSACTION (İşlem) ---
-            CreateMap<ServiceTransaction, ServiceTransactionDto>()
-                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.ServiceDefinition != null ? src.ServiceDefinition.Name : "Özel İşlem"))
-                .ForMember(dest => dest.VehiclePlate, opt => opt.MapFrom(src => src.Vehicle != null ? src.Vehicle.PlateNumber : ""))
-                .ForMember(dest => dest.PersonnelNames, opt => opt.MapFrom(src =>
-                    src.Personnels != null ? string.Join(", ", src.Personnels.Select(p => p.FirstName + " " + p.LastName)) : ""))
-                .ReverseMap();
-
-            CreateMap<CreateTransactionDto, ServiceTransaction>()
-                .ForMember(dest => dest.TransactionItems, opt => opt.MapFrom(src => src.Items));
-
-            CreateMap<TransactionItemDto, ServiceTransactionItem>().ReverseMap();
-
             // --- PERSONEL ---
-            // --- PERSONEL (GÜNCELLENDİ) ---
             CreateMap<Personnel, PersonnelDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src =>
-                    // İsim veya Soyisim null gelse bile patlamaz, boşlukları temizler.
                     ((src.FirstName ?? "") + " " + (src.LastName ?? "")).Trim()
                 ))
                 .ReverseMap();
 
             CreateMap<CreatePersonnelDto, Personnel>();
             CreateMap<UpdatePersonnelDto, Personnel>();
-
-            // --- MATERIAL, VEHICLE, CUSTOMER (Diğerleri) ---
-            CreateMap<Material, MaterialDto>().ReverseMap();
-            CreateMap<CreateMaterialDto, Material>();
-            CreateMap<ServiceDefinition, ServiceDefinitionDto>().ReverseMap();
-            CreateMap<CreateServiceDefDto, ServiceDefinition>();
-            CreateMap<Vehicle, VehicleDto>().ReverseMap();
-            CreateMap<CreateVehicleDto, Vehicle>();
-            CreateMap<Customer, CustomerDto>().ReverseMap();
-            CreateMap<CreateCustomerDto, Customer>();
 
             // ==================================================================
             // YENİ KATALOG YAPISI (BURASI DÜZELTİLDİ)

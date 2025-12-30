@@ -40,7 +40,12 @@ namespace BaglanCarCare.Application.Services
                 Id = x.Id,
                 CustomerInfo = x.Vehicle?.Customer != null ? x.Vehicle.Customer.FirstName + " " + x.Vehicle.Customer.LastName : "Bilinmiyor",
                 CustomerPhone = x.Vehicle?.Customer?.PhoneNumber ?? "-",
+                CustomerEmail = x.Vehicle?.Customer?.Email,
                 VehicleInfo = x.Vehicle != null ? x.Vehicle.Brand + " " + x.Vehicle.Model : "Araç Silinmiş",
+                Brand = x.Vehicle?.Brand ?? "-",
+                Model = x.Vehicle?.Model ?? "-",
+                Color = x.Vehicle?.Color,
+                Year = x.Vehicle?.Year.ToString(),
                 Plate = x.Vehicle?.PlateNumber ?? "-",
                 TotalPrice = x.TotalPrice,
                 Status = x.Status.ToString(),
@@ -117,8 +122,9 @@ namespace BaglanCarCare.Application.Services
             var transaction = new ServiceTransaction
             {
                 VehicleId = vehicle.Id,
-                TransactionDate = r.Date.ToUniversalTime(),
-                AppointmentDate = r.Date.ToUniversalTime(),
+
+                TransactionDate = r.ReceivedDate.ToUniversalTime(),
+                AppointmentDate = r.TargetDate.ToUniversalTime(),
                 TotalPrice = r.TotalPrice,
                 Description = "Sipariş Kaydı",
                 Status = TransactionStatus.Pending,
@@ -129,10 +135,14 @@ namespace BaglanCarCare.Application.Services
             };
 
             // Personel
-            if (r.PersonnelId > 0)
+            // Personel (Çoklu Seçim)
+            if (r.PersonnelIds != null && r.PersonnelIds.Any())
             {
-                var staff = await _personnelRepo.GetByIdAsync(r.PersonnelId);
-                if (staff != null) transaction.Personnels.Add(staff);
+                foreach (var pid in r.PersonnelIds)
+                {
+                    var staff = await _personnelRepo.GetByIdAsync(pid);
+                    if (staff != null) transaction.Personnels.Add(staff);
+                }
             }
 
             // Hizmet Kalemleri
@@ -171,6 +181,28 @@ namespace BaglanCarCare.Application.Services
             {
                 var newStaff = await _personnelRepo.GetAsync(p => r.PersonnelIds.Contains(p.Id));
                 foreach (var staff in newStaff) transaction.Personnels.Add(staff);
+            }
+
+            // HİZMET GÜNCELLEME (YENİ)
+            if (r.SelectedServices != null)
+            {
+                transaction.TransactionItems.Clear(); // Önce temizle
+                foreach (var item in r.SelectedServices)
+                {
+                    transaction.TransactionItems.Add(new ServiceTransactionItem
+                    {
+                        Category = item.Category,
+                        Name = item.Product,
+                        SelectedParts = item.Part,
+                        Price = item.Price
+                    });
+                }
+            }
+
+            // FİYAT GÜNCELLEME (YENİ)
+            if (r.TotalPrice.HasValue)
+            {
+                transaction.TotalPrice = r.TotalPrice.Value;
             }
 
             await _transRepo.UpdateAsync(transaction);

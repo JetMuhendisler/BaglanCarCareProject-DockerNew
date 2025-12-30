@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Check, ChevronRight, ChevronLeft, Car, Calendar, CreditCard, X, Loader2, User } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Car, Calendar, CreditCard, X, Loader2, User, Clock } from "lucide-react";
 import { orderService, catalogService, personnelService } from "../api";
+import CalendarView from "../components/CalendarView";
 
 const NewOrderWizard = ({ onClose, onSuccess }) => {
   const [step, setStep] = useState(1);
@@ -11,16 +12,19 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [staffList, setStaffList] = useState([]);
+  const [existingOrders, setExistingOrders] = useState([]);
 
   // --- FORM STATE ---
   const [formData, setFormData] = useState({
     customerName: "", customerPhone: "", customerEmail: "",
     plateNumber: "", brand: "", model: "", color: "", year: "",
     selectedServices: [], 
-    appointmentDate: new Date().toISOString().split('T')[0], appointmentTime: "09:00",
+    receivedDate: new Date().toISOString(), // Teslim Alınan (Sistem)
+    targetDate: new Date().toISOString().split('T')[0], // Teslim Edilecek (Hedef)
+    appointmentTime: "09:00",
     paymentMethod: "Nakit", isPaid: false,
     finalPrice: null,
-    personnelId: 0 // Personel seçimi için
+    personnelIds: [] // Çoklu Personel seçimi için
   });
 
   // --- STEP 2 SELECTION STATES ---
@@ -32,14 +36,16 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catsRes, prodsRes, staffRes] = await Promise.all([
+        const [catsRes, prodsRes, staffRes, ordersRes] = await Promise.all([
             catalogService.getAllCategories(),
             catalogService.getAllProducts(),
-            personnelService.getAll()
+            personnelService.getAll(),
+            orderService.getAll()
         ]);
         setCategories(Array.isArray(catsRes) ? catsRes : catsRes.data || []);
         setProducts(Array.isArray(prodsRes) ? prodsRes : prodsRes.data || []);
         setStaffList(Array.isArray(staffRes) ? staffRes : staffRes.data || []);
+        setExistingOrders(Array.isArray(ordersRes) ? ordersRes : ordersRes.data || []);
       } catch (err) {
         console.error("Veri yüklenemedi:", err);
       } finally {
@@ -52,6 +58,17 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
   // --- HANDLERS ---
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePersonnelToggle = (id) => {
+      setFormData(prev => {
+          const current = prev.personnelIds || [];
+          if (current.includes(id)) {
+              return { ...prev, personnelIds: current.filter(x => x !== id) };
+          } else {
+              return { ...prev, personnelIds: [...current, id] };
+          }
+      });
   };
 
   const handlePlateBlur = async () => {
@@ -148,8 +165,9 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
         model: formData.model,
         color: formData.color,
         year: formData.year,
-        personnelId: Number(formData.personnelId), // Seçilen personel
-        date: new Date(`${formData.appointmentDate}T${formData.appointmentTime}`).toISOString(),
+        personnelIds: formData.personnelIds, // Çoklu seçim listesi
+        receivedDate: formData.receivedDate,
+        targetDate: new Date(`${formData.targetDate}T${formData.appointmentTime}`).toISOString(), // Hedef Tarih + Seçilen Saat
         totalPrice: formData.finalPrice !== null ? Number(formData.finalPrice) : formData.selectedServices.reduce((sum, item) => sum + item.price, 0),
         paymentMethod: formData.paymentMethod,
         isPaid: formData.isPaid,
@@ -372,7 +390,6 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
     );
   };
 
-  // ADIM 3: RANDEVU & ÖDEME & PERSONEL
   const generateTimeSlots = () => {
     const slots = [];
     for (let i = 8; i <= 19; i++) {
@@ -384,58 +401,133 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
 
   const calculateTotal = () => formData.selectedServices.reduce((sum, item) => sum + item.price, 0);
 
-  const renderStep3 = () => (
+  // ADIM 3: TAKVİM & PLANLAMA (Split View)
+  const renderStep3 = () => {
+    // Helper to get orders for selected date
+    const selectedOrders = existingOrders.filter(o => {
+        const oDate = new Date(o.rawDate || o.date || o.Date || o.TransactionDate);
+        return !isNaN(oDate.getTime()) && oDate.toISOString().split('T')[0] === formData.targetDate;
+    });
+
+    return (
+      <div className="h-full flex flex-col md:flex-row gap-6">
+         {/* LEFT: CALENDAR (Flexible) */}
+         <div className="flex-1 flex flex-col min-w-0">
+             <div className="flex justify-between items-center mb-3">
+                 <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800 dark:text-gray-200"><Calendar className="text-blue-600 dark:text-brand"/> Tarih Planlama</h3>
+                 <div className="text-xs bg-gray-100 dark:bg-dark-card px-2 py-1 rounded border border-gray-200 dark:border-dark-border flex items-center gap-1">
+                     <span className="text-gray-500">Teslim Alınan:</span>
+                     <span className="font-mono font-bold">{new Date(formData.receivedDate).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
+                 </div>
+             </div>
+             
+             <div className="flex-1 overflow-y-auto pr-1">
+                 <CalendarView 
+                    orders={existingOrders} 
+                    selectedDate={formData.targetDate}
+                    onDateSelect={(d) => handleChange("targetDate", d)}
+                    showDetails={false} // Hide built-in details, we show them on right
+                 />
+             </div>
+         </div>
+
+         {/* RIGHT: DETAILS & TIME (Fixed Width) */}
+         <div className="w-full md:w-80 flex flex-col gap-4 border-l border-gray-100 dark:border-dark-border pl-6">
+            
+            {/* 1. SEÇİLİ TARİH & SAAT */}
+            <div className="bg-blue-50 dark:bg-brand/10 p-4 rounded-xl border border-blue-100 dark:border-brand/20">
+                <label className="block text-xs font-bold text-blue-800 dark:text-brand-light mb-1 uppercase tracking-wider">Hedef Teslim Zamanı</label>
+                <div className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+                    {new Date(formData.targetDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })}
+                </div>
+
+                <div className="relative">
+                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18}/>
+                    <select 
+                        value={formData.appointmentTime}
+                        onChange={(e) => handleChange("appointmentTime", e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                    >
+                        {generateTimeSlots().map(t => (
+                            <option key={t} value={t}>{t}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* 2. GÜNLÜK İŞ PLAN (Compact List) */}
+            <div className="flex-1 flex flex-col min-h-0 bg-gray-50 dark:bg-dark-card rounded-xl border border-gray-200 dark:border-dark-border p-4">
+                <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                    Günlük İş Planı ({selectedOrders.length})
+                </h4>
+                
+                <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                    {selectedOrders.length === 0 ? (
+                        <div className="text-center py-8 text-gray-400 text-sm italic">
+                           Bu tarihte kayıtlı işlem yok.<br/>Müsait.
+                        </div>
+                    ) : (
+                        selectedOrders.map((o, i) => (
+                            <div key={i} className="bg-white dark:bg-dark-bg p-2 rounded shadow-sm border border-gray-100 dark:border-dark-border/50 text-sm">
+                                <div className="flex justify-between items-start mb-1">
+                                    <span className="font-bold text-gray-800 dark:text-gray-200">{o.plate}</span>
+                                    <span className={`text-[10px] px-1.5 rounded-full 
+                                        ${(o.status||"").includes("Bekliyor") ? "bg-orange-100 text-orange-700" : 
+                                          (o.status||"").includes("Tamam") ? "bg-green-100 text-green-700" : 
+                                          "bg-blue-100 text-blue-700"}`}>{o.status}</span>
+                                </div>
+                                <div className="text-xs text-gray-500 truncate">{o.brand} {o.model}</div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+         </div>
+      </div>
+    );
+  };
+
+  // ADIM 4: DETAYLAR (Eski Step 3)
+  const renderStep4 = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
         
-        {/* SOL: RANDEVU & PERSONEL */}
+        {/* SOL: PERSONEL SEÇİMİ */}
         <div className="space-y-4">
-          {/* Randevu */}
+          {/* Personel Seçimi */}
           <div className="rounded-lg p-4 shadow-sm border transition-colors
             bg-white border-gray-200
             dark:bg-dark-card dark:border-dark-border">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-200"><Calendar className="text-blue-600 dark:text-brand"/> Randevu</h3>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">Tarih Seçimi</label>
-              <input type="date" className="w-full p-3 rounded-lg mb-4 border outline-none
-                bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500
-                dark:bg-dark-bg dark:border-dark-border dark:text-white dark:focus:ring-brand" 
-                value={formData.appointmentDate} onChange={e => handleChange("appointmentDate", e.target.value)} />
-
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">Saat Seçimi</label>
-              <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto pr-1">
-                  {generateTimeSlots().map(time => (
-                      <button key={time}
-                          onClick={() => handleChange("appointmentTime", time)}
-                          className={`py-2 px-1 rounded text-sm text-center border transition-all 
-                          ${formData.appointmentTime === time 
-                              ? "bg-blue-600 text-white border-blue-600 shadow dark:bg-brand dark:text-white dark:border-brand" 
-                              : "border-gray-300 text-gray-700 hover:bg-gray-100 dark:hover:bg-dark-hover dark:border-dark-border dark:text-gray-300"}`}>
-                          {time}
-                      </button>
-                  ))}
+              <h3 className="font-bold text-lg mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-200"><User className="text-blue-600 dark:text-brand"/> Personel Ata (Çoklu Seçim)</h3>
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                 {staffList.map(p => {
+                   const isSelected = (formData.personnelIds || []).includes(p.id);
+                   return (
+                   <div key={p.id} 
+                      onClick={() => handlePersonnelToggle(p.id)}
+                      className={`p-3 rounded-lg border cursor-pointer flex items-center gap-3 transition-all
+                      ${isSelected 
+                          ? "bg-blue-50 border-blue-500 ring-1 ring-blue-500 dark:bg-brand/20 dark:border-brand dark:ring-brand" 
+                          : "hover:bg-gray-50 border-gray-200 dark:border-dark-border dark:hover:bg-dark-hover"}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white shadow-sm flex-shrink-0
+                          ${isSelected ? "bg-blue-600 dark:bg-brand" : "bg-gray-400"}`}>
+                          {p.firstName?.charAt(0) || "?"}
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                           <span className={`font-bold truncate ${isSelected ? "text-blue-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
+                             {p.firstName} {p.lastName}
+                           </span>
+                           <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{p.position || p.role || "Pozisyon Yok"}</span>
+                        </div>
+                        {isSelected && <Check className="ml-auto text-blue-600 dark:text-brand" size={16}/>}
+                   </div>
+                   );
+                 })}
+                 {staffList.length === 0 && <div className="col-span-2 text-center text-gray-400 py-4">Kayıtlı personel yok.</div>}
               </div>
           </div>
-
-          {/* Personel Seçimi (YENİ) */}
-          <div className="rounded-lg p-4 shadow-sm border transition-colors
-            bg-white border-gray-200
-            dark:bg-dark-card dark:border-dark-border">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-200"><User className="text-blue-600 dark:text-brand"/> Personel Atama</h3>
-              <select 
-                  className="w-full p-3 rounded-lg outline-none focus:ring-2 border transition-colors
-                  bg-white border-gray-300 text-gray-900 focus:ring-blue-500
-                  dark:border-dark-border dark:bg-dark-bg dark:text-white dark:focus:ring-brand"
-                  value={formData.personnelId}
-                  onChange={(e) => handleChange("personnelId", e.target.value)}
-              >
-                  <option value="0">Personel Seçiniz (Opsiyonel)</option>
-                  {staffList.map(st => (
-                      <option key={st.id} value={st.id}>{st.fullName || st.name || st.firstName}</option>
-                  ))}
-              </select>
-          </div>
         </div>
-
         {/* SAĞ: ÖDEME */}
         <div>
           <h3 className="font-bold text-lg mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-200"><CreditCard className="text-blue-600 dark:text-brand"/> Ödeme</h3>
@@ -503,8 +595,8 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
         <div className="flex justify-center py-4 shadow-sm z-10 border-b
           bg-white border-gray-200
           dark:bg-dark-card dark:border-dark-border">
-          {[1, 2, 3].map(i => (
-            <div key={i} className={`flex items-center ${i < 3 ? "after:content-[''] after:w-24 after:h-1 after:mx-4 after:rounded after:bg-gray-200 dark:after:bg-dark-border" : ""}`}>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className={`flex items-center ${i < 4 ? "after:content-[''] after:w-16 after:h-1 after:mx-2 after:rounded after:bg-gray-200 dark:after:bg-dark-border" : ""}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all shadow-md 
                 ${step === i 
                     ? "bg-blue-600 text-white scale-110 dark:bg-brand" 
@@ -522,6 +614,7 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
         </div>
 
         {/* FOOTER */}
@@ -534,7 +627,7 @@ const NewOrderWizard = ({ onClose, onSuccess }) => {
             <ChevronLeft size={18}/> Geri
           </button>
           
-          {step < 3 ? (
+          {step < 4 ? (
             <button onClick={() => setStep(step + 1)} disabled={step === 1 && !formData.plateNumber} 
               className="px-8 py-3 rounded-lg flex items-center gap-2 font-bold shadow-lg disabled:opacity-50 disabled:shadow-none transition-all
               bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200

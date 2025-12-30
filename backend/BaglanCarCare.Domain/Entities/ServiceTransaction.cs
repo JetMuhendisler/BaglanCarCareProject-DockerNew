@@ -22,9 +22,6 @@ namespace BaglanCarCare.Domain.Entities
         // Hata veren 'Personnels' listesi burası:
         public ICollection<Personnel> Personnels { get; set; } = new List<Personnel>();
 
-        public int? ServiceDefinitionId { get; set; }
-        public ServiceDefinition? ServiceDefinition { get; set; }
-
         // Hata veren 'TransactionItems' listesi burası:
         public ICollection<ServiceTransactionItem> TransactionItems { get; set; } = new List<ServiceTransactionItem>();
     }

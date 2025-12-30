@@ -24,6 +24,7 @@ namespace BaglanCarCare.Application.Interfaces.Services
         Task<ServiceResponse<bool>> DeleteVariantAsync(int id);
 
         // Parça (Sub-Part)
+        Task<ServiceResponse<List<PartPriceDto>>> GetPartPricesAsync(int variantId);
         Task<ServiceResponse<int>> CreatePartPriceAsync(CreatePartPriceDto request);
         Task<ServiceResponse<bool>> UpdatePartPriceAsync(UpdatePartPriceDto request);
         Task<ServiceResponse<bool>> DeletePartPriceAsync(int id);

@@ -16,8 +16,9 @@ namespace BaglanCarCare.Application.DTOs
         public string? Color { get; set; }
         public string? Year { get; set; }
 
-        public int PersonnelId { get; set; }
-        public DateTime Date { get; set; }
+        public List<int> PersonnelIds { get; set; } = new();
+        public DateTime ReceivedDate { get; set; }
+        public DateTime TargetDate { get; set; }
         public decimal TotalPrice { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public bool IsPaid { get; set; }
@@ -42,6 +43,11 @@ namespace BaglanCarCare.Application.DTOs
         public string CustomerInfo { get; set; } = string.Empty;
         public string CustomerPhone { get; set; } = string.Empty;
         public string VehicleInfo { get; set; } = string.Empty;
+        public string Brand { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public string? Color { get; set; }
+        public string? Year { get; set; }
+        public string? CustomerEmail { get; set; }
         public string Plate { get; set; } = string.Empty;
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = string.Empty;
@@ -66,6 +72,10 @@ namespace BaglanCarCare.Application.DTOs
         public int StatusId { get; set; }
         public List<int> PersonnelIds { get; set; } = new();
         public bool IsPaid { get; set; }
+        
+        // YENİ: Hizmet ve Fiyat Güncelleme Desteği
+        public List<OrderItemDto>? SelectedServices { get; set; }
+        public decimal? TotalPrice { get; set; }
     }
 
     // 4. SEARCH (Aynen Kalabilir)

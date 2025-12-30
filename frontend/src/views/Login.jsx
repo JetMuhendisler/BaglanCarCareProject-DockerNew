@@ -52,11 +52,7 @@ const LoginView = ({ onLogin }) => {
         bg-white border-gray-200
         dark:bg-dark-card dark:border-dark-border">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg transition-colors
-            bg-blue-600 shadow-blue-200
-            dark:bg-brand dark:shadow-brand/20">
-            <Car className="text-white" size={32} />
-          </div>
+          <img src={bgImage} alt="Logo" className="w-24 h-24 mx-auto mb-4 object-contain rounded-full shadow-lg" />
           <h1 className="text-3xl font-bold mb-2 text-gray-800 dark:text-gray-100">Bağlan Oto</h1>
           <p className="text-gray-500 dark:text-gray-400">Yönetim Paneli Girişi</p>
         </div>

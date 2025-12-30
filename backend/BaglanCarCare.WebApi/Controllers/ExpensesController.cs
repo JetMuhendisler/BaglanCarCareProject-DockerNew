@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BaglanCarCare.WebApi.Controllers
 {
-    [Authorize(Roles = "Admin")] // Bu kayıtları sadece Admin görmeli
+    [Authorize] // Herkes görebilir
     [ApiController]
     [Route("api/ek-muhasebe")]
     public class ExpensesController : ControllerBase
@@ -24,18 +24,21 @@ namespace BaglanCarCare.WebApi.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateExpenseDto request)
         {
             return Ok(await _service.CreateAsync(request));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Update(UpdateExpenseDto request)
         {
             return Ok(await _service.UpdateAsync(request));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

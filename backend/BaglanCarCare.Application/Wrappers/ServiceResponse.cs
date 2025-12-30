@@ -41,5 +41,13 @@
             Success = success;
             Message = message;
         }
+        
+        // 6. Veri ve Mesaj (Success = true kabul edilir)
+        public ServiceResponse(T data, string message)
+        {
+            Data = data;
+            Success = true;
+            Message = message;
+        }
     }
 }

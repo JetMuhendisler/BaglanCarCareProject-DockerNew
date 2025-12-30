@@ -51,7 +51,6 @@ namespace BaglanCarCare.Persistence.Repositories
                     .Include(x => x.Vehicle)
                     .Include(x => x.Vehicle.Customer)
                     .Include(x => x.Personnels)
-                    .Include(x => x.ServiceDefinition)
                     .Include(x => x.TransactionItems)
                     .ToListAsync() as List<T>;
             }

@@ -12,10 +12,12 @@ namespace BaglanCarCare.WebApi.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _service;
+        private readonly IDeletionRequestService _deletionRequestService;
 
-        public OrdersController(IOrderService service)
+        public OrdersController(IOrderService service, IDeletionRequestService deletionRequestService)
         {
             _service = service;
+            _deletionRequestService = deletionRequestService;
         }
 
         [HttpGet]
@@ -27,9 +29,26 @@ namespace BaglanCarCare.WebApi.Controllers
         [HttpPut("guncelle")]
         public async Task<IActionResult> Update(UpdateOrderDto request) => Ok(await _service.UpdateOrderDetailsAsync(request));
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id) => Ok(await _service.DeleteOrderAsync(id));
+        public async Task<IActionResult> Delete(int id, [FromQuery] string? note = null)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                return Ok(await _service.DeleteOrderAsync(id));
+            }
+            else
+            {
+                var username = User.Identity?.Name ?? "Bilinmiyor";
+                var req = new CreateDeletionRequestDto 
+                { 
+                    TargetEntityName = "Order", 
+                    TargetId = id, 
+                    Note = !string.IsNullOrEmpty(note) ? note : "Personel talebi" 
+                };
+                // 0 as RequesterId placeholder
+                return Ok(await _deletionRequestService.CreateRequestAsync(req, 0, username));
+            }
+        }
 
         [HttpGet("ara/{text}")]
         public async Task<IActionResult> Search(string text) => Ok(await _service.SearchByPhoneOrPlateAsync(text));

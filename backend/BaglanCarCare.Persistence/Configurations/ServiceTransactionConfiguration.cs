@@ -18,11 +18,7 @@ namespace BaglanCarCare.Persistence.Configurations
             builder.HasMany(x => x.Personnels)
                    .WithMany(x => x.ServiceTransactions);
 
-            // Hizmet Tanımı İlişkisi
-            builder.HasOne(x => x.ServiceDefinition)
-                   .WithMany(x => x.ServiceTransactions)
-                   .HasForeignKey(x => x.ServiceDefinitionId)
-                   .IsRequired(false);
+
         }
     }
 }

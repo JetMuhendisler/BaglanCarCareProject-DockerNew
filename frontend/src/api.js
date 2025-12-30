@@ -35,6 +35,14 @@ api.interceptors.response.use(
 export const authService = {
   login: (username, password) => api.post("/api/auth/login", { username, password }),
   register: (data) => api.post("/api/auth/register", data),
+  getUsers: () => api.get("/api/auth/users"),
+  deleteUser: (id) => api.delete(`/api/auth/users/${id}`),
+};
+
+export const deletionRequestService = {
+  getPending: () => api.get("/api/deletion-requests/pending"),
+  approve: (id) => api.post(`/api/deletion-requests/approve/${id}`),
+  reject: (id) => api.post(`/api/deletion-requests/reject/${id}`),
 };
 
 export const orderService = {
@@ -43,7 +51,7 @@ export const orderService = {
   search: (text) => api.get(`/api/siparis/ara/${text}`),
   update: (data) => api.put("/api/siparis/guncelle", data),
   // SİLME FONKSİYONU BURADA:
-  delete: (id) => api.delete(`/api/siparis/${id}`),
+  delete: (id, note = "") => api.delete(`/api/siparis/${id}?note=${encodeURIComponent(note)}`),
 };
 
 export const personnelService = {

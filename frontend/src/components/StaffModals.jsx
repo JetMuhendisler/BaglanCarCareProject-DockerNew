@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Save, User, DollarSign, Calendar } from "lucide-react";
+import { X, Save, User, DollarSign, Calendar, Briefcase } from "lucide-react";
 // personnelService importuna gerek yok, sildik.
 
 // --- YENİ PERSONEL EKLEME MODALI ---

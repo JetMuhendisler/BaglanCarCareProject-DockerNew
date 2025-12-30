@@ -145,6 +145,13 @@ namespace BaglanCarCare.Application.Services
         // ==========================================
         // 4. LEVEL: PARÇA (SUB-PART) İŞLEMLERİ
         // ==========================================
+        public async Task<ServiceResponse<List<PartPriceDto>>> GetPartPricesAsync(int variantId)
+        {
+            var prices = await _partRepo.GetAsync(x => x.ProductVariantId == variantId);
+            var dtos = _mapper.Map<List<PartPriceDto>>(prices);
+            return new ServiceResponse<List<PartPriceDto>>(dtos);
+        }
+
         public async Task<ServiceResponse<int>> CreatePartPriceAsync(CreatePartPriceDto req)
         {
             var part = _mapper.Map<ProductPartPrice>(req);
