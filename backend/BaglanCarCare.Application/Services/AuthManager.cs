@@ -53,7 +53,7 @@ namespace BaglanCarCare.Application.Services
             user.LockoutEnd = null;
             await _repo.UpdateAsync(user);
 
-            var secretKey = _config["JwtSettings:SecretKey"] ?? "default_secret_key_for_dev_only";
+            var secretKey = _config["JwtSettings:SecretKey"] ?? "BuEnAz32KarakterlikCokGizliBirSifreOlmali123456";
             var expiryMinutes = double.Parse(_config["JwtSettings:ExpiryMinutes"] ?? "60");
             var expiresAt = DateTime.UtcNow.AddMinutes(expiryMinutes); // Calculate expiration once
             var key = Encoding.ASCII.GetBytes(secretKey);
