@@ -87,6 +87,11 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // 6. DB Migration & Seed
+/* 
+   FRANKFURT GÜNCELLEMESİ:
+   Veritabanı Frankfurt'a taşındığı için artık gecikme sorunu yok.
+   Otomatik kurulumu (Migration) tekrar açıyoruz.
+*/
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
