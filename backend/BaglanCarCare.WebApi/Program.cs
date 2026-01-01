@@ -14,15 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
-// Sentry Integration
-builder.WebHost.UseSentry(o =>
-{
-    // DSN value will be read from "Sentry:Dsn" in appsettings or "SENTRY_DSN" env var
-    o.Dsn = builder.Configuration["Sentry:Dsn"];
-    o.Debug = true;
-    o.TracesSampleRate = 1.0;
-});
-
 // 2. Add services
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
@@ -119,12 +110,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseSerilogRequestLogging(); // HTTP isteklerini logla
+app.UseSerilogRequestLogging(); 
 
 app.UseCors("AllowAll");
+
+// SPA Support
+app.UseStaticFiles(); 
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+app.MapFallbackToFile("index.html"); // Redirect unhandled requests to React
 
 try 
 {
