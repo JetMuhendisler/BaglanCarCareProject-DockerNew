@@ -104,11 +104,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 // 7. Pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger'ı her ortamda açıyoruz (Production dahil)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseSerilogRequestLogging(); 
 
