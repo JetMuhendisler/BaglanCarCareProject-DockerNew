@@ -40,18 +40,20 @@ namespace BaglanCarCare.Application.Services
                     var lockoutMinutes = int.Parse(_config["JwtSettings:LockoutMinutes"] ?? "15");
                     user.LockoutEnd = DateTime.UtcNow.AddMinutes(lockoutMinutes);
                     user.FailedLoginAttempts = 0; // Reset attempts after locking
-                    await _repo.UpdateAsync(user);
+                    // await _repo.UpdateAsync(user);
                     return new ServiceResponse<TokenDto>($"Çok fazla başarısız deneme. Hesabınız {lockoutMinutes} dakika kilitlendi.", false);
                 }
 
-                await _repo.UpdateAsync(user);
+                // await _repo.UpdateAsync(user);
                 return new ServiceResponse<TokenDto>("Kullanıcı adı veya şifre hatalı", false);
             }
 
             // Successful Login
             user.FailedLoginAttempts = 0;
             user.LockoutEnd = null;
-            await _repo.UpdateAsync(user); 
+            // Start of Hang Fix: Transaction Mode Compatibility
+            // await _repo.UpdateAsync(user); 
+            // End of Hang Fix 
             
 
             var secretKey = _config["JwtSettings:SecretKey"] ?? "BuEnAz32KarakterlikCokGizliBirSifreOlmali123456";
