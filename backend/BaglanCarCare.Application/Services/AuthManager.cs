@@ -19,7 +19,9 @@ namespace BaglanCarCare.Application.Services
         public AuthManager(IGenericRepository<User> repo, IConfiguration config) { _repo = repo; _config = config; }
         public async Task<ServiceResponse<TokenDto>> LoginAsync(LoginDto r)
         {
+            Console.WriteLine($"[DEBUG] Login attempt for: {r.Username}");
             var user = (await _repo.GetAsync(u => u.Username == r.Username)).FirstOrDefault();
+            Console.WriteLine($"[DEBUG] User found: {user != null}");
 
             if (user == null) return new ServiceResponse<TokenDto>("Kullanıcı adı veya şifre hatalı", false);
 
@@ -40,18 +42,20 @@ namespace BaglanCarCare.Application.Services
                     var lockoutMinutes = int.Parse(_config["JwtSettings:LockoutMinutes"] ?? "15");
                     user.LockoutEnd = DateTime.UtcNow.AddMinutes(lockoutMinutes);
                     user.FailedLoginAttempts = 0; // Reset attempts after locking
-                    // await _repo.UpdateAsync(user);
+                    await _repo.UpdateAsync(user);
                     return new ServiceResponse<TokenDto>($"Çok fazla başarısız deneme. Hesabınız {lockoutMinutes} dakika kilitlendi.", false);
                 }
 
-                // await _repo.UpdateAsync(user);
+                await _repo.UpdateAsync(user);
                 return new ServiceResponse<TokenDto>("Kullanıcı adı veya şifre hatalı", false);
             }
 
             // Successful Login
             user.FailedLoginAttempts = 0;
             user.LockoutEnd = null;
-            // await _repo.UpdateAsync(user);
+            Console.WriteLine("[DEBUG] Updating user stats...");
+            await _repo.UpdateAsync(user);
+            Console.WriteLine("[DEBUG] User stats updated. Generating token...");
 
             var secretKey = _config["JwtSettings:SecretKey"] ?? "BuEnAz32KarakterlikCokGizliBirSifreOlmali123456";
             var expiryMinutes = double.Parse(_config["JwtSettings:ExpiryMinutes"] ?? "60");
@@ -63,6 +67,7 @@ namespace BaglanCarCare.Application.Services
                 Expires = expiresAt,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             }));
+            Console.WriteLine("[DEBUG] Token generated successfully.");
             return new ServiceResponse<TokenDto>(new TokenDto { Token = token, Role = user.Role, FullName = user.FullName, Expiration = expiresAt });
         }
         public async Task<ServiceResponse<int>> RegisterAsync(RegisterDto r) { var u = new User { Username = r.Username, PasswordHash = r.Password, FullName = r.FullName, Role = r.Role }; await _repo.AddAsync(u); return new ServiceResponse<int>(u.Id); }
